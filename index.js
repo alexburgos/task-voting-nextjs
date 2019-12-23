@@ -1,23 +1,14 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
-// IMPORT MODELS
-require('./models/Product');
+// IMPORT MODELS HERE
 
 const app = express();
 
-mongoose.Promise = global.Promise;
-mongoose.connect(
-	process.env.MONGODB_URI || `mongodb://localhost:27017/node-react-starter`,
-	{ useNewUrlParser: true }
-);
-
-
 app.use(bodyParser.json());
 
-//IMPORT ROUTES
-require('./routes/index')(app);
+//IMPORT ROUTES HERE
+
 
 if (process.env.NODE_ENV === 'production') {
 	app.use(express.static('client/build'));
