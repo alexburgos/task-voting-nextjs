@@ -1,41 +1,20 @@
-import React, { useState, useEffect } from 'react';
-
-// SERVICES
-import productService from './services/';
+import React from 'react';
+import { useFetchPolls } from './hooks/index';
+import Poll from './components/Poll';
 
 function App() {
-	const [products, setproducts] = useState(null);
-
-	useEffect(() => {
-		if (!products) {
-			getProducts();
-		}
-	});
-
-	const getProducts = async () => {
-		let res = await productService.getAll();
-		// console.log(res);
-		setproducts(res);
-	};
-
-	const renderProduct = product => {
-		return (
-			<li key={product._id} className="list__item product">
-				<h3 className="product__name">{product.name}</h3>
-				<p className="product__description">{product.description}</p>
-			</li>
-		);
-	};
+	let [polls, isError, isLoading] = useFetchPolls();
 
 	return (
 		<div className="App">
-			<ul className="list">
-				{products && products.length > 0 ? (
-					products.map(product => renderProduct(product))
-				) : (
-					<p>No products found</p>
-				)}
-			</ul>
+			<h1>Planning Poker</h1>
+
+			<section>
+				<h2>These are the current polls: </h2>
+				{isLoading && <p>Loading...</p>}
+				{polls.length > 0 &&
+					polls.map((poll, index) => <Poll key={index} pollData={poll} />)}
+			</section>
 		</div>
 	);
 }
