@@ -6,12 +6,14 @@ const app = express();
 const Pusher = require('pusher');
 
 require('../models/Poll');
-const Poll = mongoose.model('polls');
+const Poll = mongoose.model('Poll');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(
-	process.env.MONGODB_URI || `mongodb://localhost:27017/planning-poker`,
-	{ useNewUrlParser: true, useUnifiedTopology: true }
+	process.env.MONGODB_URI || `mongodb://localhost:27017/planning-poker`, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true
+	}
 );
 
 const pusher = new Pusher({
@@ -23,7 +25,9 @@ const pusher = new Pusher({
 });
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+	extended: false
+}));
 app.use(cors());
 
 app.get(`/`, async (req, res) => {
@@ -36,23 +40,30 @@ app.get(`/`, async (req, res) => {
 });
 
 app.get(`/polls`, async (req, res) => {
-	console.log('request all polls');
-	let polls = await Poll.find();
-
-	console.log(polls);
-	return res.status(200).send(polls);
+	try {
+		let polls = await Poll.find();
+		if (polls) return res.status(200).send(polls);
+	} catch (error) {
+		throw error;
+	}
 });
 
 app.post(`/poll`, async (req, res) => {
-	let poll = await Poll.create(req.body);
-	return res.status(201).send({
-		error: false,
-		poll
-	});
+	try {
+		let poll = await Poll.create(req.body);
+		return res.status(201).send({
+			error: false,
+			poll
+		});
+	} catch (error) {
+		throw error;
+	}
 });
 
 app.put(`/poll/:id`, async (req, res) => {
-	const { id } = req.params;
+	const {
+		id
+	} = req.params;
 });
 
 if (process.env.NODE_ENV === 'production') {

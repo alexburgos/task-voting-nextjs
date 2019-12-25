@@ -1,22 +1,38 @@
 import React from 'react';
-import { useFetchPolls } from './hooks/index';
-import Poll from './components/Poll';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from 'react-router-dom';
+import Home from './components/Home';
 
-function App() {
-	let [polls, isError, isLoading] = useFetchPolls();
+function createNewPoll () {}
 
-	return (
-		<div className="App">
-			<h1>Planning Poker</h1>
+const App = () => {
+  return (
+		<Router>
+				<nav className="App__nav">
+					<ul>
+						<li>
+							<Link to="/">Home</Link>
+						</li>
+						<li>
+							<Link to="/polls">Polls</Link>
+						</li>
+					</ul>
+				</nav>
 
-			<section>
-				<h2>These are the current polls: </h2>
-				{isLoading && <p>Loading...</p>}
-				{polls.length > 0 &&
-					polls.map((poll, index) => <Poll key={index} pollData={poll} />)}
-			</section>
-		</div>
-	);
+				<Switch>
+					<Route path="/polls">
+						<Home />
+					</Route>
+					<Route path="/">
+						<Home />
+					</Route>
+				</Switch>
+		</Router>
+  )
 }
 
-export default App;
+export default App
