@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import actions from '../store/actions/authActions';
+import { connect } from 'react-redux';
 
-const Home = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const history = useHistory();
-	const location = useLocation();
-  
+const Home = props => {
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const history = useHistory();
+	let { authenticate } = props;
+
 	function handleSubmit(e) {
 		e.preventDefault();
 
@@ -19,8 +21,8 @@ const Home = () => {
 		})
 			.then(res => {
 				if (res.status === 200) {
-          history.push('/');
-          console.log(history);
+					authenticate();
+					return history.push('/polls');
 				} else {
 					const error = new Error(res.error);
 					throw error;
@@ -30,33 +32,46 @@ const Home = () => {
 				console.error(err);
 				alert(err);
 			});
-  }
-  
+	}
+
 	return (
 		<div className="Home">
 			<h1>Welcome to Planning Poker</h1>
-			<form onSubmit={handleSubmit} className="Form">
-				<h2>Please log in to see the tasks</h2>
-				<input
-					type="email"
-					name="email"
-					placeholder="Enter your email"
-					value={email}
-					onChange={e => setEmail(e.target.value)}
-					required
-				/>
-				<input
-					type="password"
-					name="password"
-					placeholder="Enter your password"
-					value={password}
-					onChange={e => setPassword(e.target.value)}
-					required
-				/>
-				<input type="submit" value="Log In" />
-			</form>
+			{props.authentication.authenticated ? (
+				<p></p>
+			) : (
+				<form onSubmit={handleSubmit} className="Form">
+					<h2>Please log in to see the tasks</h2>
+					<input
+						type="email"
+						name="email"
+						placeholder="Enter your email"
+						value={email}
+						onChange={e => setEmail(e.target.value)}
+						required
+					/>
+					<input
+						type="password"
+						name="password"
+						placeholder="Enter your password"
+						value={password}
+						onChange={e => setPassword(e.target.value)}
+						required
+					/>
+					<input type="submit" value="Log In" />
+				</form>
+			)}
 		</div>
 	);
 };
 
-export default Home
+const mapStateToProps = state => ({
+	authentication: state.authentication
+});
+
+const mapDispatchToProps = dispatch => ({
+	authenticate: () => dispatch(actions.authenticate()),
+	signOut: () => dispatch(actions.signOut())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

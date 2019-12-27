@@ -61,22 +61,11 @@ const withAuth = (req, res, next) => {
 	}
 };
 
-app.get('/api/polls', withAuth, (req, res) => {
-	res.send('The password is potato');
+
+app.get('/api/checkToken', withAuth, (req, res) => {
+  // res.sendStatus(200);
 });
 
-app.get('/checkToken', withAuth, (req, res) => {
-  res.sendStatus(200);
-});
-
-app.get(`/`, async (req, res) => {
-	pusher.trigger('planning-poker', 'poker-vote', {
-		task: req.body.taskName,
-		value: req.body.voteValue
-	});
-
-	return res.status(200).send('Hello World');
-});
 
 app.post('/api/register', (req, res) => {
 	const { email, password } = req.body;
@@ -127,7 +116,7 @@ app.post('/api/authenticate', (req, res) => {
 	});
 });
 
-app.get(`/api/polls`, async (req, res) => {
+app.get(`/api/polls`, withAuth, async (req, res) => {
 	try {
 		let polls = await Poll.find();
 		if (polls) return res.status(200).send(polls);
@@ -136,21 +125,34 @@ app.get(`/api/polls`, async (req, res) => {
 	}
 });
 
-app.post(`/api/poll`, async (req, res) => {
+app.get('/api/poll/:pollId', async (req, res) => {
+	let { pollId } = req.params;
 	try {
-		let poll = await Poll.create(req.body);
-		return res.status(201).send({
-			error: false,
-			poll
-		});
+		let poll = await Poll.findById(req.params.pollId);
+		if (poll) return res.status(200).send(poll);
 	} catch (error) {
 		throw error;
 	}
 });
 
-app.put(`/api/poll/:id`, async (req, res) => {
-	const { id } = req.params;
+app.post('/api/poll/:pollId/vote', async (req, res, next) => {
+	let { choice } = req.body;
+	let { pollId } = req.params;
+	// let identifier = `choices.${choice}.votes`;
+
+	console.log('params are ', req.body, req.params);
+	// try {
+	// 	await Poll.update(
+	// 		{ _id: pollId },
+	// 		{ $inc: { [identifier]: 1 } }
+	// 	);
+
+	// 	return res.status(201).send({ error: false });
+	// } catch (error) {
+	// 	throw error;
+	// }
 });
+
 
 if (process.env.NODE_ENV === 'production') {
 	app.use(express.static('client/build'));

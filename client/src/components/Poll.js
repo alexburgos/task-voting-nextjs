@@ -1,19 +1,42 @@
 import React from 'react';
 
 const Poll = ({pollData}) => {
-  let { task, choices } = pollData;
+	let { task, choices, _id } = pollData;
+	
+	function submitVote(choice) {
+		console.log(choice, `/api/poll/${_id}/vote`);
+		fetch(`/api/poll/${_id}/vote`, {
+			method: 'POST',
+			body: JSON.stringify({ choice }),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+			.then(res => {
+				if (res.status === 200) {
+				} else {
+					const error = new Error(res.error);
+					throw error;
+				}
+			})
+			.catch(err => {
+				console.error(err);
+				// alert(err);
+			});
+	}
 
   return (
 		<div className="Poll">
 			<h3>Task name: {task} </h3>
-			<h3>Votes:</h3>
-			<ul>
-				{choices.map( (choice, index) => (
-					<li key={index}>
-						{choice.value}: {choice.votes}
-					</li>
+			<div className="Poll__choices">
+				{choices.map((choice) => (
+					<div key={choice._id}>
+						<span>Points: {choice.value}</span>
+						<span>Votes: {choice.votes}</span>
+						<button onClick={(e) => submitVote(choice)}>Vote</button>
+					</div>
 				))}
-			</ul>
+			</div>
 		</div>
 	);
 }

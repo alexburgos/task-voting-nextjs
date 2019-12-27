@@ -10,13 +10,14 @@ export const useFetchPolls = () => {
     setIsLoading(true);
     
 		try {
-			let response = await fetch(`/polls`);
+			let response = await fetch(`/api/polls`);
       let data = await response.json();
       setIsLoading(false);
 			return setPolls(data);
 		} catch (error) {
 			setIsLoading(false);
-			setIsError(true);
+      setIsError(true);
+      console.error(error);
 		}
   };
   
