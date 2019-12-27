@@ -47,6 +47,8 @@ app.use(cors());
 const withAuth = (req, res, next) => {
 	const { token } = req.cookies;
 
+	console.log('running auth first ', req.cookies, token);
+
 	if (!token) {
 		res.status(401).send('Unauthorized: No token provided');
 	} else {
@@ -61,11 +63,9 @@ const withAuth = (req, res, next) => {
 	}
 };
 
-
 app.get('/api/checkToken', withAuth, (req, res) => {
-  // res.sendStatus(200);
+  res.sendStatus(200);
 });
-
 
 app.post('/api/register', (req, res) => {
 	const { email, password } = req.body;
@@ -82,7 +82,6 @@ app.post('/api/register', (req, res) => {
 
 app.post('/api/authenticate', (req, res) => {
 	const { email, password } = req.body;
-	console.log(req.body);
 	User.findOne({ email }, (err, user) => {
 		if (err) {
 			console.error(err);
@@ -125,17 +124,19 @@ app.get(`/api/polls`, withAuth, async (req, res) => {
 	}
 });
 
-app.get('/api/poll/:pollId', async (req, res) => {
+app.get('/api/poll/:pollId', withAuth, async (req, res) => {
 	let { pollId } = req.params;
+	console.log('poll id is ', pollId);
 	try {
-		let poll = await Poll.findById(req.params.pollId);
+		let poll = await Poll.findById(pollId);
+		console.log(poll.then())
 		if (poll) return res.status(200).send(poll);
 	} catch (error) {
 		throw error;
 	}
 });
 
-app.post('/api/poll/:pollId/vote', async (req, res, next) => {
+app.post('/api/poll/:pollId/vote', withAuth, async (req, res, next) => {
 	let { choice } = req.body;
 	let { pollId } = req.params;
 	// let identifier = `choices.${choice}.votes`;
