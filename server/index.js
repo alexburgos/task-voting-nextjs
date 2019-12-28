@@ -16,8 +16,7 @@ const Poll = require('../models/Poll');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(
-	process.env.MONGODB_URI || `mongodb://localhost:27017/planning-poker`,
-	{
+	process.env.MONGODB_URI || `mongodb://localhost:27017/planning-poker`, {
 		useCreateIndex: true,
 		useNewUrlParser: true,
 		useUnifiedTopology: true
@@ -45,14 +44,14 @@ app.use(cors());
 //Routes (TODO: move to routes file)
 
 const withAuth = (req, res, next) => {
-	const { token } = req.cookies;
-
-	console.log('running auth first ', req.cookies, token);
+	const {
+		token
+	} = req.cookies;
 
 	if (!token) {
 		res.status(401).send('Unauthorized: No token provided');
 	} else {
-		jwt.verify(token, secret, function(err, decoded) {
+		jwt.verify(token, secret, async function (err, decoded) {
 			if (err) {
 				res.status(401).send('Unauthorized: Invalid token');
 			} else {
@@ -63,56 +62,83 @@ const withAuth = (req, res, next) => {
 	}
 };
 
-app.get('/api/checkToken', withAuth, (req, res) => {
-  res.sendStatus(200);
+app.get('/api/checktoken', withAuth, async (req, res) => {
+	console.log(req.email);
+	let { email } = req;
+	let user = await User.findOne({ email });
+	if (user) return res.status(200).send(user);
 });
 
-app.post('/api/register', (req, res) => {
-	const { email, password } = req.body;
-	const user = new User({ email, password });
-
-	user.save(err => {
-		if (err) {
-			res.status(500).send('Error registering new user.');
-		} else {
-			res.status(200).send('Welcome to planning poker!');
-		}
+app.post('/api/register', async (req, res) => {
+	const {
+		userName,
+		email,
+		password
+	} = req.body;
+	const user = new User({
+		userName,
+		email,
+		password
 	});
+
+	try {
+		await user.save();
+		res.status(200).send(user);
+	} catch (error) {
+		res.status(500).send('Error registering new user. Please try again later.');
+		console.error(error);
+	}
 });
 
-app.post('/api/authenticate', (req, res) => {
-	const { email, password } = req.body;
-	User.findOne({ email }, (err, user) => {
-		if (err) {
-			console.error(err);
-			res.status(500).json({
-				error: 'Internal server error.'
-			});
-		} else if (!user) {
-			res.status(401).json({
-				error: 'Incorrect email or password'
+app.post('/api/authenticate', async (req, res) => {
+	const {
+		email,
+		password
+	} = req.body;
+
+	try {
+		let user = await User.findOne({ email });
+
+		if (!user) {
+			return res.status(401).send({
+				message: 'User does not exist, please create an account!',
+				newUser: true
 			});
 		} else {
 			user.isCorrectPassword(password, (err, same) => {
 				if (err) {
-					res.status(500).json({
-						error: 'Internal server error'
+					return res.status(500).send({
+						message: 'Internal server error'
 					});
 				} else if (!same) {
-					res.status(401).json({
-						error: 'Incorrect email or password'
+					return res.status(401).send({
+						message: 'Incorrect email or password',
+						newUser: false
 					});
 				} else {
-					const payload = { email };
+					const payload = {
+						email
+					};
 					const token = jwt.sign(payload, secret, {
-						expiresIn: '1h'
+						expiresIn: '1d'
 					});
 
-					res.cookie('token', token, { httpOnly: true }).sendStatus(200);
+					res.cookie('token', token, {
+						httpOnly: true
+					});
+
+					return res.status(200).send(user);
 				}
 			});
 		}
-	});
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+app.get('/logout', function (req, res) {
+	// jwtr.destroy(token)
+	return res.status(200);
 });
 
 app.get(`/api/polls`, withAuth, async (req, res) => {
@@ -120,37 +146,40 @@ app.get(`/api/polls`, withAuth, async (req, res) => {
 		let polls = await Poll.find();
 		if (polls) return res.status(200).send(polls);
 	} catch (error) {
-		throw error;
+		console.error(error);
 	}
 });
 
 app.get('/api/poll/:pollId', withAuth, async (req, res) => {
-	let { pollId } = req.params;
-	console.log('poll id is ', pollId);
+	let {
+		pollId
+	} = req.params;
 	try {
 		let poll = await Poll.findById(pollId);
-		console.log(poll.then())
 		if (poll) return res.status(200).send(poll);
 	} catch (error) {
-		throw error;
+		console.error(error);
 	}
 });
 
-app.post('/api/poll/:pollId/vote', withAuth, async (req, res, next) => {
-	let { choice } = req.body;
-	let { pollId } = req.params;
-	// let identifier = `choices.${choice}.votes`;
+app.post('/api/vote', withAuth, async (req, res, next) => {
+	let {
+		pollId,
+		choice
+	} = req.body;
 
-	console.log('params are ', req.body, req.params);
+	let identifier = `choices.${choice}.votes`;
+
+	console.log('params are ', pollId, choice, identifier);
 	// try {
-	// 	await Poll.update(
+	// 	let poll = await Poll.update(
 	// 		{ _id: pollId },
 	// 		{ $inc: { [identifier]: 1 } }
 	// 	);
 
-	// 	return res.status(201).send({ error: false });
+	// 	return res.status(200).send({ error: false, poll });
 	// } catch (error) {
-	// 	throw error;
+	// 	console.error(error);
 	// }
 });
 
@@ -163,6 +192,13 @@ if (process.env.NODE_ENV === 'production') {
 		res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
 	});
 }
+
+//Debug
+process.on('unhandledRejection', (reason, promise) => {
+  console.log('Unhandled Rejection at:', reason.stack || reason)
+  // Recommended: send the information to sentry.io
+  // or whatever crash reporting service you use
+})
 
 const PORT = process.env.PORT || 5000;
 

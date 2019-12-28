@@ -6,45 +6,69 @@ import {
 	Link,
 	useHistory
 } from 'react-router-dom';
-import actions from './store/actions/authActions';
+import authActions from './store/actions/authActions';
+import userActions from './store/actions/userActions';
 import { connect } from 'react-redux';
 import Home from './components/Home';
 import Polls from './components/Polls';
 import PrivateRoute from './components/PrivateRoute';
+import GlobalStyles from './styles/GlobalStyles';
+import { StyledNav, StyledNavList } from './styles/StyledNav';
 
 const App = props => {
 	const history = useHistory();
-	let { authenticate } = props;
+	let { authenticate, setUser, authentication } = props;
+
+	async function restoreSession() {
+		// check for auth token and restore auth session
+		try {
+			let response = await fetch('/api/checktoken');
+			if (response.ok) {
+				let user = await response.json()
+				authenticate();
+				setUser(user);
+			} else {
+				console.log('User must be logged in!');
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	async function handleLogout() {
+		try {
+			let response = await fetch('/api/logout');
+			if (response.ok) {
+				setUser({});
+				return history.push('/');
+			} else {
+				console.log('Error logging out');
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	}
 
 	useEffect(() => {
-		// check for auth token and restore auth session
-		fetch('/checkToken')
-			.then(res => {
-				if (res.status === 200) {
-					// authenticate();
-					// return history.push('/polls');
-				} else {
-					const error = new Error(res.error);
-					throw error;
-				}
-			})
-			.catch(err => {
-				console.error(err);
-			});
+		restoreSession();
 	}, []);
 
 	return (
 		<>
-			<nav className="App__nav">
-				<ul>
+			<GlobalStyles/>
+			<StyledNav className="App__nav">
+				<StyledNavList>
 					<li>
 						<Link to="/">Home</Link>
 					</li>
 					<li>
-						<Link to="/polls">Polls</Link>
+						<Link to="/polls">Tasks</Link>
 					</li>
-				</ul>
-			</nav>
+					{authentication.authenticated  && <li>
+						<a onClick={handleLogout}>Log out</a>
+					</li>}
+				</StyledNavList>
+			</StyledNav>
 
 			<Switch>
 				<PrivateRoute path="/polls">
@@ -62,12 +86,14 @@ const App = props => {
 };
 
 const mapStateToProps = state => ({
-	authentication: state.authentication
+	authentication: state.authentication,
+	user: state.user
 });
 
 const mapDispatchToProps = dispatch => ({
-	authenticate: () => dispatch(actions.authenticate()),
-	signOut: () => dispatch(actions.signOut())
+	authenticate: () => dispatch(authActions.authenticate()),
+	signOut: () => dispatch(authActions.signOut()),
+	setUser: user => dispatch(userActions.setUser(user))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

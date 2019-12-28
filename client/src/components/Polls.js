@@ -18,7 +18,7 @@ const Polls = props => {
 
 			{polls.length > 0 && !isLoading && (
 				<section>
-					<h2>These are the current polls: </h2>
+					<h2>These are the current tasks: </h2>
 					{polls.length > 0 &&
 						polls.map((poll) => <Poll key={poll._id} pollData={poll} />)}
 				</section>

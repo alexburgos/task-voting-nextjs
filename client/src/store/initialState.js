@@ -1,5 +1,6 @@
 export const authentication = {
-  authenticated: false
+  authenticated: false,
+  error: null
 };
 
 export const user = {};

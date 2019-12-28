@@ -15,6 +15,13 @@ export default function authReducer(state = initialState, action) {
         authenticated: true
       };
 
+    case constants.AUTH_FAIL:
+      return {
+        ...state,
+        authenticated: false,
+        error: action.payload,
+      }
+
     default:
       return state;
   }
