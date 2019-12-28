@@ -11,11 +11,7 @@ export const useFetchPolls = () => {
     
 		try {
       let response = await fetch(`/api/polls`);
-      if (response.status === 401) {
-        alert('Please log in');
-        setIsLoading(false);
-        setIsError(true);
-      }else if (response.ok) {
+      if (response.ok) {
         let data = await response.json();
         setIsLoading(false);
         return setPolls(data);

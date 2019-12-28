@@ -35,20 +35,6 @@ const App = props => {
 		}
 	}
 
-	async function handleLogout() {
-		try {
-			let response = await fetch('/api/logout');
-			if (response.ok) {
-				setUser({});
-				return history.push('/');
-			} else {
-				console.log('Error logging out');
-			}
-		} catch (error) {
-			console.error(error);
-		}
-	}
-
 	useEffect(() => {
 		restoreSession();
 	}, []);
@@ -64,9 +50,6 @@ const App = props => {
 					<li>
 						<Link to="/polls">Tasks</Link>
 					</li>
-					{authentication.authenticated  && <li>
-						<a onClick={handleLogout}>Log out</a>
-					</li>}
 				</StyledNavList>
 			</StyledNav>
 

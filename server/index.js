@@ -62,8 +62,18 @@ const withAuth = (req, res, next) => {
 	}
 };
 
+const createToken = (email) => {
+	const payload = {
+		email
+	};
+	const token = jwt.sign(payload, secret, {
+		expiresIn: '1h'
+	});
+
+	return token;
+}
+
 app.get('/api/checktoken', withAuth, async (req, res) => {
-	console.log(req.email);
 	let { email } = req;
 	let user = await User.findOne({ email });
 	if (user) return res.status(200).send(user);
@@ -83,6 +93,11 @@ app.post('/api/register', async (req, res) => {
 
 	try {
 		await user.save();
+		let token = createToken(email);
+
+		res.cookie('token', token, {
+			httpOnly: true
+		});
 		res.status(200).send(user);
 	} catch (error) {
 		res.status(500).send('Error registering new user. Please try again later.');
@@ -116,17 +131,11 @@ app.post('/api/authenticate', async (req, res) => {
 						newUser: false
 					});
 				} else {
-					const payload = {
-						email
-					};
-					const token = jwt.sign(payload, secret, {
-						expiresIn: '1d'
-					});
+					let token = createToken(email);
 
 					res.cookie('token', token, {
 						httpOnly: true
 					});
-
 					return res.status(200).send(user);
 				}
 			});
@@ -136,7 +145,7 @@ app.post('/api/authenticate', async (req, res) => {
 	}
 });
 
-app.get('/logout', function (req, res) {
+app.get('/api/logout', function (req, res) {
 	// jwtr.destroy(token)
 	return res.status(200);
 });
@@ -192,13 +201,6 @@ if (process.env.NODE_ENV === 'production') {
 		res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
 	});
 }
-
-//Debug
-process.on('unhandledRejection', (reason, promise) => {
-  console.log('Unhandled Rejection at:', reason.stack || reason)
-  // Recommended: send the information to sentry.io
-  // or whatever crash reporting service you use
-})
 
 const PORT = process.env.PORT || 5000;
 
