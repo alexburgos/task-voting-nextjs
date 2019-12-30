@@ -5,7 +5,7 @@ mongoose.connect(
 	{ useNewUrlParser: true, useUnifiedTopology: true }
 );
 
-const Poll = require('../models/Poll');
+const Poll = require('../pages/api/models/Poll');
 
 const tasks = ['Make Breakfast', 'Walk the dog', 'Commute to work', 'Build a cool app'];
 
