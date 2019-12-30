@@ -1,10 +1,13 @@
 import React from 'react'
 import fetch from 'isomorphic-unfetch'
+import { useRouter } from 'next/router'
 import Layout from '../../components/Layout'
 import { StyledContainer } from '../../styles/StyledContainer'
 import { StyledButton } from '../../styles/StyledForm'
 
 const Poll = props => {
+  const router = useRouter()
+
   async function deleteTask() {
     try {
       await fetch('/api/deletePoll', {
@@ -14,6 +17,7 @@ const Poll = props => {
         },
         body: JSON.stringify({ id: props.poll._id })
       })
+      router.push('/polls')
     } catch (error) {
       console.error(error)
     }

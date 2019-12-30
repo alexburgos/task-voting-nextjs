@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import fetch from 'isomorphic-unfetch'
+import { useRouter } from 'next/router'
 import Layout from '../components/Layout'
 import { StyledContainer } from '../styles/StyledContainer'
 import { StyledForm, StyledSubmit, StyledInput } from '../styles/StyledForm'
 
 const CreatePoll = () => {
   const [taskName, setTaskName] = useState('')
+  const router = useRouter()
 
   async function createTask (e) {
     e.preventDefault()
@@ -17,6 +19,7 @@ const CreatePoll = () => {
         },
         body: JSON.stringify({ taskName })
       })
+      router.push('/polls')
     } catch (error) {
       console.error(error)
     }
