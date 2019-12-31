@@ -3,13 +3,14 @@ import fetch from 'isomorphic-unfetch'
 import { useRouter } from 'next/router'
 import Layout from '../components/Layout'
 import { StyledContainer } from '../styles/StyledContainer'
-import { StyledForm, StyledSubmit, StyledInput } from '../styles/StyledForm'
+import { StyledForm, StyledSubmit, StyledInput, StyledTextArea } from '../styles/StyledForm'
 
 const CreatePoll = () => {
   const [taskName, setTaskName] = useState('')
+  const [taskDescription, setTaskDescription] = useState('')
   const router = useRouter()
 
-  async function createTask (e) {
+  async function createPoll(e) {
     e.preventDefault()
     try {
       await fetch('/api/createPoll', {
@@ -17,7 +18,7 @@ const CreatePoll = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ taskName })
+        body: JSON.stringify({ taskName, taskDescription })
       })
       router.push('/polls')
     } catch (error) {
@@ -31,18 +32,25 @@ const CreatePoll = () => {
         display='flex'
         flexDirection='column'
         alignItems='center'
+        flex="1"
       >
-        <h1> Create New Task: </h1>{' '}
-        <StyledForm onSubmit={createTask}>
+        <h1> Create New Poll: </h1>{' '}
+        <StyledForm onSubmit={createPoll}>
           <StyledInput
             type='text'
             name='taskName'
-            placeholder='Enter a task'
+            placeholder='Enter a task name'
             value={taskName}
             onChange={e => setTaskName(e.target.value)}
             required
           />
-          <StyledSubmit type='submit' value='Create task' />
+          <StyledTextArea
+            name='taskDescription'
+            placeholder='What is this task supposed to?'
+            value={taskDescription}
+            onChange={e => setTaskDescription(e.target.value)}
+          />
+          <StyledSubmit type='submit' value='Create Poll' />
         </StyledForm>{' '}
       </StyledContainer>{' '}
     </Layout>

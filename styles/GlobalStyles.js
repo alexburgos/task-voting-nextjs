@@ -14,4 +14,8 @@ body{
   font-family: 'Fira Sans', sans-serif;
   margin: 0;
 }
+
+p {
+  margin: 10px auto;
+}
 `;

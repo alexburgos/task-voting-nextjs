@@ -2,11 +2,12 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const pollSchema = new Schema({
-	taskName: String,
+	taskName: { type: String, required: true },
+	taskDescription: { type: String, required: false },
 	choices: [
 		{
-			value: Number,
-			votes: Number
+			value: { type: Number, required: true },
+			votes: { type: Number, required: true }
 		}
 	]
 });

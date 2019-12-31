@@ -12,12 +12,12 @@ const Nav = () => (
 			</li>
 			<li>
 				<Link href="/polls">
-					<a>Tasks</a>
+					<a>Polls</a>
 				</Link>
 			</li>
 			<li>
 				<Link href="/createPoll">
-					<a>Create New Task</a>
+					<a>Create New Poll</a>
 				</Link>
 			</li>
 		</StyledNavList>

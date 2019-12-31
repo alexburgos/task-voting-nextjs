@@ -3,6 +3,7 @@ import Link from 'next/link'
 import fetch from 'isomorphic-unfetch'
 import Layout from '../components/Layout'
 import { StyledContainer } from '../styles/StyledContainer'
+import { StyledPollItem } from '../styles/StyledPoll';
 
 const Polls = props => (
   <Layout>
@@ -10,21 +11,29 @@ const Polls = props => (
       display='flex'
       alignItems='center'
       flexDirection='column'
-      height='80vh'
+      minHeight='80vh'
     >
-      <h1>Tasks: </h1>
-      {props.polls.length > 0 && (
-        <StyledContainer
-          display='flex'
-          justifyContent='center'
-          flexDirection='row'
-        >
-          {props.polls.map(poll => (
-            <Link key={poll._id} href={`/poll/${poll._id}`}>
-              <span>{poll.taskName}</span>
-            </Link>
-          ))}
-        </StyledContainer>
+      {props.polls.length > 0 ? (
+        <>
+          <h1>You can vote on the following polls: </h1>
+          {props.polls.length > 0 && (
+            <StyledContainer
+              display='flex'
+              alignItems='center'
+              flexDirection='column'
+              marginTop='50px'
+              minHeight='0'
+            >
+              {props.polls.map(poll => (
+                <Link key={poll._id} href={`/poll/${poll._id}`}>
+                  <StyledPollItem>{poll.taskName}</StyledPollItem>
+                </Link>
+              ))}
+            </StyledContainer>
+          )}
+        </>
+      ) : (
+        <p>There are no polls to vote on. </p>
       )}
     </StyledContainer>
   </Layout>

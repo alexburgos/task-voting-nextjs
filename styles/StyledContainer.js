@@ -2,6 +2,9 @@ import styled from 'styled-components';
 export const StyledContainer = styled.div `
   flex: ${props => (props.flex ? props.flex : '1')};
   cursor: ${props => (props.onClick ? 'pointer' : 'inherit')};
+  min-height: ${props => (props.minHeight || '80vh')};
+  padding-bottom: 10px;
+  
   ${props =>
     props.display && {
       display: props.display
@@ -44,11 +47,6 @@ export const StyledContainer = styled.div `
     }}
 
   ${props =>
-    props.height && {
-      height: props.height
-    }}
-
-  ${props =>
     props.padding && {
       padding: props.padding
     }}
@@ -87,4 +85,9 @@ export const StyledContainer = styled.div `
     props.margin && {
       margin: props.margin
     }}
+
+    ${props =>
+      props.marginTop && {
+        margin: props.marginTop
+      }}
 `;
