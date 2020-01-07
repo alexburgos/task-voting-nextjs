@@ -16,7 +16,7 @@ Poll.deleteMany({})
     let polls = [];
     for (let i = 0; i < tasks.length; i++) {
       polls.push({
-        task: tasks[i],
+        taskName: tasks[i],
         taskDescription: 'We have to do something!',
 				choices: [
 					{

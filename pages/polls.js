@@ -40,8 +40,6 @@ const Polls = props => (
 )
 
 Polls.getInitialProps = async ({ req }) => {
-  // const baseURL = req ? `${req.protocol}://${req.get("Host")}` : "";
-  // const res = await fetch(`${baseURL}/api/polls`);
   const res = await fetch(`http://localhost:3000/api/polls`)
   const data = await res.json()
 

@@ -15,7 +15,6 @@ export const StyledNavList = styled.ul`
   justify-content: center;
   align-items: center;
   margin: 0;
-  padding: 0;
 
   li {
     list-style: none;
@@ -26,4 +25,8 @@ export const StyledNavList = styled.ul`
     color: #fff;
     text-decoration: none;
   }
+`;
+
+export const StyledNavListItem = styled.li`
+  align-self: ${props => props.alignSelf}
 `;

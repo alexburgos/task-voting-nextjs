@@ -1,5 +1,5 @@
 
-import connectDb from '../../middleware/dbMiddleware.js';
+import connectDb from '../../middleware/dbMiddleware';
 import Poll from '../../models/Poll';
 
 const handler = async (req, res) => { 

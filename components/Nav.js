@@ -1,25 +1,34 @@
 import React from 'react';
 import Link from 'next/link';
-import { StyledNav, StyledNavList } from '../styles/StyledNav';
+import {
+	StyledNav,
+	StyledNavList,
+	StyledNavListItem
+} from '../styles/StyledNav';
 
 const Nav = () => (
 	<StyledNav>
 		<StyledNavList>
-			<li>
+			<StyledNavListItem>
 				<Link href="/">
 					<a>Home</a>
 				</Link>
-			</li>
-			<li>
+			</StyledNavListItem>
+			<StyledNavListItem>
 				<Link href="/polls">
 					<a>Polls</a>
 				</Link>
-			</li>
-			<li>
+			</StyledNavListItem>
+			<StyledNavListItem>
 				<Link href="/createPoll">
 					<a>Create New Poll</a>
 				</Link>
-			</li>
+			</StyledNavListItem>
+			<StyledNavListItem alignSelf="flex-end">
+				<Link href="/login">
+					<a>Login</a>
+				</Link>
+			</StyledNavListItem>
 		</StyledNavList>
 	</StyledNav>
 );
