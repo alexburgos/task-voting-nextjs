@@ -1,6 +1,6 @@
 
 import connectDb from '../../middleware/dbMiddleware.js';
-import Poll from './models/Poll';
+import Poll from '../../models/Poll';
 
 const handler = async (req, res) => { 
   try {

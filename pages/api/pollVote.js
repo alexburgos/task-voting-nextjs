@@ -1,22 +1,19 @@
-import connectDb from '../../middleware/dbMiddleware.js';
-import Poll from './models/Poll';
+import connectDb from '../../middleware/dbMiddleware'
+import connectPusher from '../../middleware/pusherMiddleware'
+import Poll from './models/Poll'
 
 const handler = async (req, res) => {
-  let {
-    pollId,
-    voteValue
-  } = req.body
+  let { pollId, voteValue } = req.body
 
-  const identifier = `choices.${voteValue-1}.votes`;
+  if (pusher) console.log(pusher)
 
-  console.log(pollId, voteValue, identifier);
-
-
+  let identifier = `choices.${voteValue - 1}.votes`
   try {
-    await Poll.findOneAndUpdate({ _id: pollId }, {$inc: {[identifier]: 1}});
-    res.send({ message: "Vote registered!" });
+    await Poll.findOneAndUpdate({ _id: pollId }, { $inc: { [identifier]: 1 } })
+
+    res.send({ message: 'Vote registered!' })
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
-};
-export default connectDb(handler);
+}
+export default connectPusher(connectDb(handler))

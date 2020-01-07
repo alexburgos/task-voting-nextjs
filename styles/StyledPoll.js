@@ -41,6 +41,7 @@ export const StyledPollVoteButton = styled.button`
   border: 1px solid var(--cool-gray);
   border-radius: 4px;
   font-family: 'Fira Sans', sans-serif;
+  font-size: 16px;
   color: #fff;
   cursor: pointer;
   text-transform: uppercase;

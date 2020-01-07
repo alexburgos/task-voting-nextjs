@@ -1,13 +1,47 @@
-import React from 'react'
+import React, { useState } from 'react'
 import fetch from 'isomorphic-unfetch'
 import { useRouter } from 'next/router'
+import Pusher from 'pusher-js';
 import Layout from '../../components/Layout'
 import { StyledButton } from '../../styles/StyledForm'
 import { StyledContainer } from '../../styles/StyledContainer'
 import { StyledPollVoteButton, StyledPollChoice } from '../../styles/StyledPoll'
 
+async function fetchPollData(props) {
+  // const baseURL = req ? `${req.protocol}://${req.get("Host")}` : "";
+  // const res = await fetch(`${baseURL}/api/polls`);
+  const res = await fetch(`http://localhost:3000/api/poll/${props.query.pollId}`)
+  const data = await res.json()
+
+  return { poll: data }
+
+}
+
 const Poll = props => {
+  const [
+    poll,
+    setPollData
+  ] = useState(props.poll)
+
   const router = useRouter()
+
+  const socket = new Pusher('e2940972e6de5b249d99', {
+    cluster: 'eu',
+    forceTLS: true
+  })
+
+  const channel = socket.subscribe('poll-vote')
+
+  channel.bind('new-vote', (data) => {
+    console.log(data)
+    if (data.voted) refreshPollData()
+  })
+
+  async function refreshPollData() {
+    console.log('refreshing after vote');
+    const refreshedProps = await fetchPollData({query: { pollId: poll._id }})
+    setPollData(refreshedProps.poll)
+  }
 
   async function deletePoll() {
     try {
@@ -33,6 +67,9 @@ const Poll = props => {
         },
         body: JSON.stringify({ pollId: props.poll._id, voteValue: choice.value })
       })
+
+
+      await refreshPollData()
     } catch (error) {
       console.error(error)
     }
@@ -45,8 +82,8 @@ const Poll = props => {
         flexDirection='column'
         alignItems='center'
       >
-        <p>{props.poll.taskName}</p>
-        {props.poll.taskDescription && <p>{props.poll.taskDescription}</p>}
+        <p>{poll.taskName}</p>
+        {poll.taskDescription && <p>{poll.taskDescription}</p>}
 
         <StyledContainer
           display='flex'
@@ -62,7 +99,7 @@ const Poll = props => {
             justifyContent='space-evenly'
             minHeight='0'
           >
-            {props.poll.choices.map(choice => (
+            {poll.choices.map(choice => (
               <StyledPollChoice
                 key={choice._id}
                 display='flex'
@@ -82,15 +119,6 @@ const Poll = props => {
   )
 }
 
-Poll.getInitialProps = async props => {
-  // const baseURL = req ? `${req.protocol}://${req.get("Host")}` : "";
-  // const res = await fetch(`${baseURL}/api/polls`);
-  console.log(props.query)
-  let { pollId } = props.query
-  const res = await fetch(`http://localhost:3000/api/poll/${pollId}`)
-  const data = await res.json()
-
-  return { poll: data }
-}
+Poll.getInitialProps = fetchPollData;
 
 export default Poll

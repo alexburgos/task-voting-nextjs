@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const pollSchema = new Schema({
@@ -12,4 +12,4 @@ const pollSchema = new Schema({
 	]
 });
 
-export default mongoose.models.Poll || mongoose.model('Poll', pollSchema);
+module.exports = mongoose.models.Poll || mongoose.model('Poll', pollSchema);

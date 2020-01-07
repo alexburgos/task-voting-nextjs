@@ -21,6 +21,8 @@ export default class App extends NextApp {
       ...pageProps
     }
 
+    console.log(process.env);
+
 		return (
 			<ThemeProvider theme={theme}>
 				<Component {...newPageProps} />
