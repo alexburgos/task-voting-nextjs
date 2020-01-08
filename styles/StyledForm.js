@@ -69,4 +69,5 @@ export const StyledSubmit = styled.input`
 export const StyledError = styled.span`
   color: var(--salmon);
   text-align: center;
+  margin-top: 10px;
 `;

@@ -1,28 +1,33 @@
 import React, { useState } from 'react';
 import fetch from 'isomorphic-unfetch';
-import Layout from '../components/layout';
+import Layout from '../components/Layout';
 import { login } from '../utils/login';
-
+import {
+	StyledForm,
+	StyledInput,
+	StyledError,
+	StyledSubmit
+} from '../styles/StyledForm';
+import { StyledContainer } from '../styles/StyledContainer';
 
 function Login() {
 	const [userData, setUserData] = useState({ username: '', error: '' });
 
-	async function handleSubmit(event) {
-		event.preventDefault();
+	async function handleSubmit(e) {
+		e.preventDefault();
 		setUserData(Object.assign({}, userData, { error: '' }));
 
 		const username = userData.username;
-		const url = '/api/login';
+		const loginUrl = '/api/login';
 
 		try {
-			const response = await fetch(url, {
+			const response = await fetch(loginUrl, {
 				method: 'POST',
-
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ username })
 			});
 			if (response.status === 200) {
-				const { token } = await response.json();
+				const { token, userName } = await response.json();
 				await login({ token });
 			} else {
 				console.log('Login failed.');
@@ -48,14 +53,18 @@ function Login() {
 
 	return (
 		<Layout>
-			<div className="login">
-				<form onSubmit={handleSubmit}>
-					<label htmlFor="username">GitHub username</label>
-
-					<input
+			<StyledContainer
+				display="flex"
+				flexDirection="column"
+				alignItems="center"
+				flex="1"
+			>
+				<StyledForm onSubmit={handleSubmit}>
+					<StyledInput
 						type="text"
 						id="username"
 						name="username"
+						placeholder="GitHub username"
 						value={userData.username}
 						onChange={event =>
 							setUserData(
@@ -64,37 +73,12 @@ function Login() {
 						}
 					/>
 
-					<button type="submit">Login</button>
-
-					{userData.error && <p className="error">Error: {userData.error}</p>}
-				</form>
-			</div>
-			<style jsx>{`
-				.login {
-					max-width: 340px;
-					margin: 0 auto;
-					padding: 1rem;
-					border: 1px solid #ccc;
-					border-radius: 4px;
-				}
-				form {
-					display: flex;
-					flex-flow: column;
-				}
-				label {
-					font-weight: 600;
-				}
-				input {
-					padding: 8px;
-					margin: 0.3rem 0 1rem;
-					border: 1px solid #ccc;
-					border-radius: 4px;
-				}
-				.error {
-					margin: 0.5rem 0 0;
-					color: brown;
-				}
-			`}</style>
+					<StyledSubmit type="submit" value="Log In"></StyledSubmit>
+					{userData.error && (
+						<StyledError className="error">Error: User {userData.error}</StyledError>
+					)}
+				</StyledForm>
+			</StyledContainer>
 		</Layout>
 	);
 }

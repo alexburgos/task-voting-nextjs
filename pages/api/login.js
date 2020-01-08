@@ -1,8 +1,10 @@
+// The following code is taken from Next.JS examples
+// github.com/zeit/next.js/tree/canary/examples/with-cookie-auth/
+
 import fetch from 'isomorphic-unfetch';
 
 export default async (req, res) => {
 	const { username } = await req.body;
-	console.log('username', username);
 	const url = `https://api.github.com/users/${username}`;
 
 	try {
@@ -10,11 +12,12 @@ export default async (req, res) => {
 
 		if (response.ok) {
 			const { id } = await response.json();
-			return res.status(200).json({ token: id });
+			return res.status(200).json({ token: id, username });
 		} else {
+			// https://github.com/developit/unfetch#caveats
 			const error = new Error(response.statusText);
-      error.response = response;
-      throw error;
+			error.response = response;
+			throw error;
 		}
 	} catch (error) {
 		const { response } = error;

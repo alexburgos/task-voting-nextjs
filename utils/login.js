@@ -1,3 +1,6 @@
+// The following code is taken from Next.JS examples
+// github.com/zeit/next.js/tree/canary/examples/with-cookie-auth/
+
 import { useEffect } from 'react';
 import Router from 'next/router';
 import nextCookie from 'next-cookies';
@@ -63,3 +66,19 @@ export const withAuthSync = WrappedComponent => {
 
 	return Wrapper;
 };
+
+// This is not production ready, (except with providers that ensure a secure host, like Now)
+// For production consider the usage of environment variables and NODE_ENV
+
+export const getHost = (req) => {
+  if (!req) return '';
+
+	const { host } = req.headers;
+
+	if (host.startsWith('localhost')) {
+		return `http://${host}`;
+	}
+	return `https://${host}`;
+}
+
+export default getHost;

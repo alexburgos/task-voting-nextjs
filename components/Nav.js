@@ -5,6 +5,7 @@ import {
 	StyledNavList,
 	StyledNavListItem
 } from '../styles/StyledNav';
+import { logout } from '../utils/login';
 
 const Nav = () => (
 	<StyledNav>
@@ -25,9 +26,7 @@ const Nav = () => (
 				</Link>
 			</StyledNavListItem>
 			<StyledNavListItem alignSelf="flex-end">
-				<Link href="/login">
-					<a>Login</a>
-				</Link>
+				<a onClick={logout}>Logout</a>
 			</StyledNavListItem>
 		</StyledNavList>
 	</StyledNav>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import fetch from 'isomorphic-unfetch';
-import Pusher from 'pusher-js';
 import { useRouter } from 'next/router';
 import Layout from '../../components/Layout';
 import { StyledButton } from '../../styles/StyledForm';
@@ -9,16 +8,18 @@ import {
 	StyledPollVoteButton,
 	StyledPollChoice
 } from '../../styles/StyledPoll';
+import { withAuthSync, getHost } from '../../utils/login';
 
 async function fetchPollData(props) {
-	// const baseURL = req ? `${req.protocol}://${req.get("Host")}` : "";
-	// const res = await fetch(`${baseURL}/api/polls`);
-	const res = await fetch(
-		`http://localhost:3000/api/poll/${props.query.pollId}`
-	);
-	const data = await res.json();
+	const apiUrl = getHost(props.req) + '/api/poll/' + props.query.pollId;
+	const response = await fetch(apiUrl);
 
-	return { poll: data };
+	if (response.ok) {
+		const data = await response.json();
+		return { poll: data };
+	} else {
+		throw Error;
+	}
 }
 
 const Poll = props => {
@@ -35,7 +36,11 @@ const Poll = props => {
 	}, [pusherChannel])
 
 	async function refreshPollData() {
-		const refreshedProps = await fetchPollData({ query: { pollId: poll._id } });
+		// Simulating the network request object from initial fetch (maybe there's a better way to do this?)
+		const refreshedProps = await fetchPollData({
+			req: { headers: { host: window.location.host } },
+			query: { pollId: poll._id }
+		});
 		setPollData(refreshedProps.poll);
   }
 
@@ -63,7 +68,8 @@ const Poll = props => {
 				},
 				body: JSON.stringify({
 					pollId: props.poll._id,
-					voteValue: choice.value
+					voteValue: choice.value,
+					userToken: props.token
 				})
 			});
 
@@ -78,11 +84,17 @@ const Poll = props => {
 			<StyledContainer
 				display="flex"
 				flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
+				alignItems="center"
+				justifyContent="center"
 			>
-				<p>{poll.taskName}</p>
-				{poll.taskDescription && <p>{poll.taskDescription}</p>}
+				<p>
+					<strong>Title</strong>: {poll.taskName}
+				</p>
+				{poll.taskDescription && (
+					<p>
+						<strong>Description</strong>: {poll.taskDescription}
+					</p>
+				)}
 
 				<StyledContainer
 					display="flex"
@@ -92,7 +104,6 @@ const Poll = props => {
 					flex="0"
 					marginTop="50px"
 				>
-					<p>How complex is this task?</p>
 					<StyledContainer
 						display="flex"
 						flexDirection="row"
@@ -105,9 +116,8 @@ const Poll = props => {
 								display="flex"
 								flexDirection="column"
 							>
-								<p>{choice.value}</p>
 								<StyledPollVoteButton onClick={() => handleVote(choice)}>
-									Vote
+									{choice.value}
 								</StyledPollVoteButton>
 								<p>{choice.votes} Votes </p>
 							</StyledPollChoice>
@@ -123,4 +133,4 @@ const Poll = props => {
 
 Poll.getInitialProps = fetchPollData;
 
-export default Poll;
+export default withAuthSync(Poll);
