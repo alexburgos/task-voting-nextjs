@@ -46,8 +46,6 @@ Polls.getInitialProps = async ctx => {
 	const { token } = nextCookie(ctx);
 	const apiUrl = getHost(ctx.req) + '/api/polls';
 
-	console.log(apiUrl);
-
 	const redirectOnError = () =>
 		typeof window !== 'undefined'
 			? Router.push('/login')

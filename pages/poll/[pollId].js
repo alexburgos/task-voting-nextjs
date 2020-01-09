@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import fetch from 'isomorphic-unfetch';
 import { useRouter } from 'next/router';
+import nextCookies from 'next-cookies';
+import cookie from 'js-cookie';
 import Layout from '../../components/Layout';
 import { StyledButton } from '../../styles/StyledForm';
 import { StyledContainer } from '../../styles/StyledContainer';
@@ -13,17 +15,29 @@ import { withAuthSync, getHost } from '../../utils/login';
 async function fetchPollData(props) {
 	const apiUrl = getHost(props.req) + '/api/poll/' + props.query.pollId;
 	const response = await fetch(apiUrl);
+	const allCookies = nextCookies(props);
+	const { voted, token } = allCookies;
+	let hasExistingVote = false;
+	console.log(allCookies);
 
 	if (response.ok) {
 		const data = await response.json();
-		return { poll: data };
+
+
+		if (voted) {
+			const { pollId, userToken } = voted;
+			hasExistingVote = pollId === data._id && userToken === token;
+		}
+
+		return { poll: data, hasExistingVote: hasExistingVote };
 	} else {
 		throw Error;
 	}
 }
 
-const Poll = props => {
+const Poll = (props) => {
 	const [poll, setPollData] = useState(props.poll);
+	const [hasExistingVote, setExistingVote] = useState(props.hasExistingVote);
 	const router = useRouter();
 	const { pusherChannel } = props;
 
@@ -33,7 +47,7 @@ const Poll = props => {
 				if (data.voted) refreshPollData();
 			});
 		}
-	}, [pusherChannel])
+	}, [pusherChannel]);
 
 	async function refreshPollData() {
 		// Simulating the network request object from initial fetch (maybe there's a better way to do this?)
@@ -42,7 +56,7 @@ const Poll = props => {
 			query: { pollId: poll._id }
 		});
 		setPollData(refreshedProps.poll);
-  }
+	}
 
 	async function deletePoll() {
 		try {
@@ -60,18 +74,23 @@ const Poll = props => {
 	}
 
 	async function handleVote(choice) {
+		const voteBody = {
+			pollId: props.poll._id,
+			voteValue: choice.value,
+			userToken: props.token
+		};
+
 		try {
 			await fetch('/api/pollVote', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({
-					pollId: props.poll._id,
-					voteValue: choice.value,
-					userToken: props.token
-				})
+				body: JSON.stringify(voteBody)
 			});
+
+			cookie.set('voted', JSON.stringify(voteBody), { expires: 365 });
+			setExistingVote(true);
 
 			await refreshPollData();
 		} catch (error) {
@@ -116,7 +135,10 @@ const Poll = props => {
 								display="flex"
 								flexDirection="column"
 							>
-								<StyledPollVoteButton onClick={() => handleVote(choice)}>
+								<StyledPollVoteButton
+									disabled={hasExistingVote}
+									onClick={() => handleVote(choice)}
+								>
 									{choice.value}
 								</StyledPollVoteButton>
 								<p>{choice.votes} Votes </p>

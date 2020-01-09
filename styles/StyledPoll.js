@@ -49,6 +49,10 @@ export const StyledPollVoteButton = styled.button`
   padding: 10px;
   width: 100%;
   height: auto;
-  
+  &:disabled {
+    border: 1px solid #666;
+    background-color: #666;
+    cursor: not-allowed;
+  }
 `;
 
