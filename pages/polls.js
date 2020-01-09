@@ -46,6 +46,8 @@ Polls.getInitialProps = async ctx => {
 	const { token } = nextCookie(ctx);
 	const apiUrl = getHost(ctx.req) + '/api/polls';
 
+	console.log(apiUrl);
+
 	const redirectOnError = () =>
 		typeof window !== 'undefined'
 			? Router.push('/login')
@@ -63,9 +65,11 @@ Polls.getInitialProps = async ctx => {
 			const data = await response.json();
 			return { polls: data };
 		} else {
+			console.log('error');
 			return await redirectOnError();
 		}
 	} catch (error) {
+		console.log('error');
 		console.error(error);
 		return redirectOnError();
 	}
