@@ -3,6 +3,14 @@ import Poll from '../../models/Poll';
 
 const votingChoices = [
 	{
+		value: 0,
+		votes: 0
+	},
+	{
+		value: 0.5,
+		votes: 0
+	},
+	{
 		value: 1,
 		votes: 0
 	},
@@ -15,11 +23,15 @@ const votingChoices = [
 		votes: 0
 	},
 	{
-		value: 4,
+		value: 5,
 		votes: 0
 	},
 	{
-		value: 5,
+		value: 8,
+		votes: 0
+	},
+	{
+		value: 13,
 		votes: 0
 	}
 ];
@@ -28,7 +40,11 @@ const handler = async (req, res) => {
 	let { taskName, taskDescription } = req.body;
 
 	try {
-		let poll = new Poll({ taskName: taskName, taskDescription: taskDescription, choices: votingChoices });
+		let poll = new Poll({
+			taskName: taskName,
+			taskDescription: taskDescription,
+			choices: votingChoices
+		});
 		await poll.save();
 		res.send({ message: 'New Task created!', data: poll });
 	} catch (error) {

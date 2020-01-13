@@ -16,17 +16,14 @@ async function fetchPollData(props) {
 	const apiUrl = getHost(props.req) + '/api/poll/' + props.query.pollId;
 	const response = await fetch(apiUrl);
 	const allCookies = nextCookies(props);
-	const { voted, token } = allCookies;
+	const { userVotes, token } = allCookies;
 	let hasExistingVote = false;
-	console.log(allCookies);
 
 	if (response.ok) {
 		const data = await response.json();
 
-
-		if (voted) {
-			const { pollId, userToken } = voted;
-			hasExistingVote = pollId === data._id && userToken === token;
+		if (userVotes) {
+			hasExistingVote = userVotes.userToken === token && userVotes.votes.includes(data._id);
 		}
 
 		return { poll: data, hasExistingVote: hasExistingVote };
@@ -89,13 +86,25 @@ const Poll = (props) => {
 				body: JSON.stringify(voteBody)
 			});
 
-			cookie.set('voted', JSON.stringify(voteBody), { expires: 365 });
+			let userVotes = (cookie.get('userVotes')) ? JSON.parse(cookie.get('userVotes')) : { userToken: props.token, votes: [] };
+			userVotes.votes.push(voteBody.pollId);
+			cookie.set('userVotes', JSON.stringify(userVotes), { expires: 365 });
+
 			setExistingVote(true);
 
 			await refreshPollData();
 		} catch (error) {
 			console.error(error);
 		}
+	}
+
+	function handleChangeVote() {
+		setExistingVote(false);
+		let userVotes = JSON.parse(cookie.get('userVotes'));
+		let filteredVotes = userVotes.votes.filter( id => id !== props.poll._id );
+		userVotes.votes = filteredVotes;
+		
+		cookie.set('userVotes', JSON.stringify(userVotes), { expires: 365 });
 	}
 
 	return (
@@ -146,8 +155,14 @@ const Poll = (props) => {
 						))}
 					</StyledContainer>
 				</StyledContainer>
-
-				<StyledButton onClick={deletePoll}>Delete Poll</StyledButton>
+				<StyledContainer display="flex" marginTop="20px" minHeight="0" >
+					{hasExistingVote && (
+						<StyledButton onClick={handleChangeVote}>
+							Change your Vote
+						</StyledButton>
+					)}
+					<StyledButton onClick={deletePoll} margin={'0 0 0 10px'}>Delete Poll</StyledButton>
+				</StyledContainer>
 			</StyledContainer>
 		</Layout>
 	);

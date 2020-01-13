@@ -45,7 +45,7 @@ export const StyledButton = styled.button`
   color: #fff;
   cursor: pointer;
   text-transform: uppercase;
-  margin: 20px auto 0;
+  margin: ${props => props.margin ? props.margin : '0 auto'};
   outline-color: ghostwhite;
   width: 200px;
   height: 50px;

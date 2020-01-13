@@ -2,9 +2,11 @@
 // github.com/zeit/next.js/tree/canary/examples/with-cookie-auth/
 
 import fetch from 'isomorphic-unfetch';
+import connectDb from '../../middleware/dbMiddleware';
+import User from '../../models/User';
 
-export default async (req, res) => {
-	const { username } = await req.body;
+const handler = async (req, res) => {
+	const { username, token } = await req.body;
 	const url = `https://api.github.com/users/${username}`;
 
 	try {
@@ -12,7 +14,28 @@ export default async (req, res) => {
 
 		if (response.ok) {
 			const { id } = await response.json();
-			return res.status(200).json({ token: id, username });
+
+			let user = await User.findOne({ token: id });
+
+			console.log(user);
+
+			// if user already exists
+			if (user) {
+				return res
+					.status(200)
+					.json({ token: id, data: user, message: 'User log in' });
+			} else {
+				let user = new User({
+					token: id,
+					userName: username,
+					votes: []
+				});
+
+				await user.save();
+				return res
+					.status(200)
+					.json({ token: id, data: user, message: 'New user' });
+			}
 		} else {
 			// https://github.com/developit/unfetch#caveats
 			const error = new Error(response.statusText);
@@ -26,3 +49,5 @@ export default async (req, res) => {
 			: res.status(400).json({ message: error.message });
 	}
 };
+
+export default connectDb(handler);

@@ -86,8 +86,8 @@ export const StyledContainer = styled.div `
       margin: props.margin
     }}
 
-    ${props =>
-      props.marginTop && {
-        margin: props.marginTop
-      }}
+  ${props =>
+    props.marginTop && {
+      margin: props.marginTop
+    }}
 `;
