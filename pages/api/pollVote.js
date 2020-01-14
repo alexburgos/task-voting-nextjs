@@ -6,8 +6,8 @@ import connectPusher from '../../middleware/pusherMiddleware';
 const handler = async (req, res) => {
 	let { pollId, index, points, userToken } = req.body;
 	let userVote = {
-		pollId,
-		points
+		pollId: pollId,
+		pointValue: points
 	}
 
 
@@ -17,6 +17,8 @@ const handler = async (req, res) => {
 		await Poll.findByIdAndUpdate(pollId, { $set: { [voteIdentifier]: 1 } });
 
 		let user = await User.findOne( { token: userToken } );
+
+		console.log(user, user.votes, user.votes.push(userVote))
 		user.votes.push(userVote);
 
 		console.log(userVote, user.votes);

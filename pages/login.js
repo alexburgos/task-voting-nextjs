@@ -27,7 +27,8 @@ function Login() {
 				body: JSON.stringify({ username })
 			});
 			if (response.status === 200) {
-				const { token, userName } = await response.json();
+				const { token, user } = await response.json();
+
 				await login({ token });
 			} else {
 				console.log('Login failed.');

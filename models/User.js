@@ -5,8 +5,8 @@ const userSchema = new Schema({
   token: { type: String, required: true },
 	userName: { type: String, required: true },
 	votes: [ {
-    pollId: { type: String, required: true },
-    points: { type: String, required: true}
+    pollId: { type: String },
+    pointValue: { type: String }
   }]
 });
 
