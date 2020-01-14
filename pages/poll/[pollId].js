@@ -73,7 +73,8 @@ const Poll = (props) => {
 	async function handleVote(choice) {
 		const voteBody = {
 			pollId: props.poll._id,
-			voteValue: choice.value,
+			index: choice.index,
+			points: choice.points,
 			userToken: props.token
 		};
 
@@ -140,17 +141,18 @@ const Poll = (props) => {
 					>
 						{poll.choices.map(choice => (
 							<StyledPollChoice
-								key={choice._id}
+								key={choice.index}
 								display="flex"
 								flexDirection="column"
 							>
 								<StyledPollVoteButton
 									disabled={hasExistingVote}
 									onClick={() => handleVote(choice)}
+									width="50px"
 								>
-									{choice.value}
+									{choice.points}
 								</StyledPollVoteButton>
-								<p>{choice.votes} Votes </p>
+								<p>{choice.votes}</p>
 							</StyledPollChoice>
 						))}
 					</StyledContainer>

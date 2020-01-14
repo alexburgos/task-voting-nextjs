@@ -24,35 +24,38 @@ Poll.deleteMany({})
 				taskDescription: 'We have to do something!',
 				choices: [
 					{
-						value: 0,
+						index: 0,
+						points: '0',
 						votes: 0
 					},
 					{
-						value: 0.5,
+						index: 1,
+						points: '0.5',
 						votes: 0
 					},
 					{
-						value: 1,
+						index: 2,
+						points: '1',
 						votes: 0
 					},
 					{
-						value: 2,
+						index: 3,
+						points: '3',
 						votes: 0
 					},
 					{
-						value: 3,
+						index: 4,
+						points: '5',
 						votes: 0
 					},
 					{
-						value: 5,
+						index: 5,
+						points: '8',
 						votes: 0
 					},
 					{
-						value: 8,
-						votes: 0
-					},
-					{
-						value: 13,
+						index: 6,
+						points: '13',
 						votes: 0
 					}
 				]

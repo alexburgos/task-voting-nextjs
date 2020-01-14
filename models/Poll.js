@@ -6,7 +6,8 @@ const pollSchema = new Schema({
 	taskDescription: { type: String, required: false },
 	choices: [
 		{
-			value: { type: Number, required: true },
+			index: { type: Number, required: true},
+			points: { type: String, required: true },
 			votes: { type: Number, required: true }
 		}
 	]

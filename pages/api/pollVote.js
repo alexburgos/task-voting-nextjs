@@ -4,30 +4,25 @@ import User from '../../models/User';
 import connectPusher from '../../middleware/pusherMiddleware';
 
 const handler = async (req, res) => {
-	let { pollId, voteValue, userToken } = req.body;
-
-	let voteIdentifier = `choices.${voteValue-1}.votes`;
+	let { pollId, index, points, userToken } = req.body;
 	let userVote = {
 		pollId,
-		vote: voteValue
+		points
 	}
 
-	console.log(voteIdentifier);
 
 	try {
-		await Poll.findOneAndUpdate({ _id: pollId }, { $inc: { [voteIdentifier]: 1 } });
-		// let user = await User.findOneAndUpdate(
-		// 	{ token: userToken },
-		// 	{
-		// 		$push: { votes: userVote },
-		// 		function(results) {
-		// 			console.log(results)
-		// 		}
-		// 	}
-		// );
-		// await user.save();
+		let voteIdentifier = `choices.${index}.votes`;
 
-		// res.send({ message: 'Vote registered!', poll, user, userVote });
+		await Poll.findByIdAndUpdate(pollId, { $set: { [voteIdentifier]: 1 } });
+
+		let user = await User.findOne( { token: userToken } );
+		user.votes.push(userVote);
+
+		console.log(userVote, user.votes);
+
+		await user.save();
+		return res.send({ message: 'Vote registered!' });
 	} catch (error) {
 		console.error(error);
 	}

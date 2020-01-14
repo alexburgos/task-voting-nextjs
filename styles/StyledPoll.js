@@ -47,7 +47,7 @@ export const StyledPollVoteButton = styled.button`
   text-transform: uppercase;
   outline-color: ghostwhite;
   padding: 10px;
-  width: 100%;
+  width: 50px;
   height: auto;
   &:disabled {
     border: 1px solid #666;
