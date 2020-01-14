@@ -6,7 +6,7 @@ import connectDb from '../../middleware/dbMiddleware';
 import User from '../../models/User';
 
 const handler = async (req, res) => {
-	const { username, token } = await req.body;
+	const { username } = await req.body;
 	const url = `https://api.github.com/users/${username}`;
 
 	try {
@@ -17,13 +17,11 @@ const handler = async (req, res) => {
 
 			let user = await User.findOne({ token: id });
 
-			console.log(user);
-
 			// if user already exists
 			if (user) {
 				return res
 					.status(200)
-					.json({ token: id, data: user, message: 'User log in' });
+					.json({ token: id, user, message: 'User log in' });
 			} else {
 				let user = new User({
 					token: id,
@@ -34,7 +32,7 @@ const handler = async (req, res) => {
 				await user.save();
 				return res
 					.status(200)
-					.json({ token: id, data: user, message: 'New user' });
+					.json({ token: id, user, message: 'New user' });
 			}
 		} else {
 			// https://github.com/developit/unfetch#caveats

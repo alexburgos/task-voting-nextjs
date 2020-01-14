@@ -4,31 +4,47 @@ import User from '../../models/User';
 import connectPusher from '../../middleware/pusherMiddleware';
 
 const handler = async (req, res) => {
-	let { pollId, index, points, userToken } = req.body;
-	let userVote = {
-		pollId: pollId,
-		pointValue: points
-	}
-
+	const {
+		pollId,
+		editingPollVote,
+		oldIndex,
+		newIndex,
+		userToken
+	} = req.body;
 
 	try {
-		let voteIdentifier = `choices.${index}.votes`;
+		const user = await User.findOne({ token: userToken });
+		const currentVote = `choices.${newIndex}.votes`;
 
-		await Poll.findByIdAndUpdate(pollId, { $set: { [voteIdentifier]: 1 } });
+		if (editingPollVote && oldIndex !== null) {
+			if (oldIndex === newIndex) return;
+			const previousVote = `choices.${oldIndex}.votes`;
 
-		let user = await User.findOne( { token: userToken } );
+			await Poll.findByIdAndUpdate(pollId, {
+				$inc: { [previousVote]: -1 }
+			});
+			await Poll.findByIdAndUpdate(pollId, { $inc: { [currentVote]: 1 } });
+		} else {
+			await Poll.findByIdAndUpdate(pollId, { $inc: { [currentVote]: 1 } });
+		}
 
-		console.log(user, user.votes, user.votes.push(userVote))
-		user.votes.push(userVote);
+		const existingPollVote = user.votes.find(vote => vote.pollId === pollId);
 
-		console.log(userVote, user.votes);
+		if (existingPollVote) {
+			existingPollVote.pointValueIndex = newIndex;
+		} else {
+			user.votes.push({
+				pollId,
+				pointValueIndex: newIndex
+			});
+		}
+
 
 		await user.save();
-		return res.send({ message: 'Vote registered!' });
+		return res.send({ message: 'Vote registered!', user });
 	} catch (error) {
 		console.error(error);
 	}
 };
-
 
 export default connectPusher(connectDb(handler));

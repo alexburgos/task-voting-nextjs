@@ -9,7 +9,7 @@ import { StyledPollItem } from '../styles/StyledPoll';
 import { withAuthSync, getHost } from '../utils/login';
 
 const Polls = props => (
-	<Layout>
+	<Layout {...props}>
 		<StyledContainer
 			display="flex"
 			alignItems="center"

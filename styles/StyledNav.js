@@ -23,7 +23,7 @@ export const StyledNavList = styled.ul`
     margin: 0 10px;
   }
 
-  li:last-of-type {
+  li.log-out {
     margin-left: auto;
   }
 

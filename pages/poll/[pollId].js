@@ -16,24 +16,32 @@ async function fetchPollData(props) {
 	const apiUrl = getHost(props.req) + '/api/poll/' + props.query.pollId;
 	const response = await fetch(apiUrl);
 	const allCookies = nextCookies(props);
-	const { userVotes, token } = allCookies;
+	const { user, token } = allCookies;
 	let hasExistingVote = false;
 
 	if (response.ok) {
 		const data = await response.json();
 
-		if (userVotes) {
-			hasExistingVote = userVotes.userToken === token && userVotes.votes.includes(data._id);
+		if (user) {
+			const currentPoll = user.votes.find(
+				vote => vote.pollId === props.query.pollId
+			);
+
+			//if current user has voted on this poll based on cookie session
+			hasExistingVote = currentPoll ? true : false;
 		}
 
-		return { poll: data, hasExistingVote: hasExistingVote };
+
+		return { poll: data, hasExistingVote };
 	} else {
 		throw Error;
 	}
 }
 
-const Poll = (props) => {
+const Poll = props => {
 	const [poll, setPollData] = useState(props.poll);
+	const [editingPollVote, setEditingPollVote] = useState(false);
+	const [user, setUser] = useState(props.user);
 	const [hasExistingVote, setExistingVote] = useState(props.hasExistingVote);
 	const router = useRouter();
 	const { pusherChannel } = props;
@@ -71,15 +79,25 @@ const Poll = (props) => {
 	}
 
 	async function handleVote(choice) {
-		const voteBody = {
-			pollId: props.poll._id,
-			index: choice.index,
-			points: choice.points,
-			userToken: props.token
-		};
+		const voteBody = editingPollVote
+			? {
+					pollId: props.poll._id,
+					editingPollVote,
+					oldIndex: parseInt(
+						user.votes.find(vote => vote.pollId === props.poll._id).pointValueIndex
+					),
+					newIndex: choice.index,
+					userToken: props.token
+			  }
+			: {
+					pollId: props.poll._id,
+					editingPollVote,
+					newIndex: choice.index,
+					userToken: props.token
+			  };
 
 		try {
-			await fetch('/api/pollVote', {
+			const response = await fetch('/api/pollVote', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -87,11 +105,12 @@ const Poll = (props) => {
 				body: JSON.stringify(voteBody)
 			});
 
-			let userVotes = (cookie.get('userVotes')) ? JSON.parse(cookie.get('userVotes')) : { userToken: props.token, votes: [] };
-			userVotes.votes.push(voteBody.pollId);
-			cookie.set('userVotes', JSON.stringify(userVotes), { expires: 365 });
+			const { user } = await response.json();
 
+			cookie.set('user', JSON.stringify(user), { expires: 1 });
 			setExistingVote(true);
+			setEditingPollVote(false);
+			setUser(user);
 
 			await refreshPollData();
 		} catch (error) {
@@ -101,15 +120,11 @@ const Poll = (props) => {
 
 	function handleChangeVote() {
 		setExistingVote(false);
-		let userVotes = JSON.parse(cookie.get('userVotes'));
-		let filteredVotes = userVotes.votes.filter( id => id !== props.poll._id );
-		userVotes.votes = filteredVotes;
-		
-		cookie.set('userVotes', JSON.stringify(userVotes), { expires: 365 });
+		setEditingPollVote(true);
 	}
 
 	return (
-		<Layout>
+		<Layout {...props}>
 			<StyledContainer
 				display="flex"
 				flexDirection="column"
@@ -157,13 +172,15 @@ const Poll = (props) => {
 						))}
 					</StyledContainer>
 				</StyledContainer>
-				<StyledContainer display="flex" marginTop="20px" minHeight="0" >
+				<StyledContainer display="flex" marginTop="20px" minHeight="0">
 					{hasExistingVote && (
 						<StyledButton onClick={handleChangeVote}>
 							Change your Vote
 						</StyledButton>
 					)}
-					<StyledButton onClick={deletePoll} margin={'0 0 0 10px'}>Delete Poll</StyledButton>
+					<StyledButton onClick={deletePoll} margin={'0 0 0 10px'}>
+						Delete Poll
+					</StyledButton>
 				</StyledContainer>
 			</StyledContainer>
 		</Layout>

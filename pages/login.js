@@ -29,7 +29,7 @@ function Login() {
 			if (response.status === 200) {
 				const { token, user } = await response.json();
 
-				await login({ token });
+				await login({ token, user });
 			} else {
 				console.log('Login failed.');
 				// https://github.com/developit/unfetch#caveats

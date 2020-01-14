@@ -7,7 +7,7 @@ import {
 } from '../styles/StyledNav';
 import { logout } from '../utils/login';
 
-const Nav = () => (
+const Nav = props => (
 	<StyledNav>
 		<StyledNavList>
 			<StyledNavListItem>
@@ -25,9 +25,11 @@ const Nav = () => (
 					<a>Create New Poll</a>
 				</Link>
 			</StyledNavListItem>
-			<StyledNavListItem alignSelf="flex-end">
-				<a onClick={logout}>Logout</a>
-			</StyledNavListItem>
+			{props.token && (
+				<StyledNavListItem className="log-out">
+					<a onClick={logout}>Logout</a>
+				</StyledNavListItem>
+			)}
 		</StyledNavList>
 	</StyledNav>
 );

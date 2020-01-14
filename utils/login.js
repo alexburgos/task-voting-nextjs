@@ -6,13 +6,14 @@ import Router from 'next/router';
 import nextCookie from 'next-cookies';
 import cookie from 'js-cookie';
 
-export const login = ({ token }) => {
+export const login = ({ token, user }) => {
 	cookie.set('token', token, { expires: 1 });
+	cookie.set('user', user, { expires: 1});
 	Router.push('/polls');
 };
 
 export const auth = ctx => {
-	const { token } = nextCookie(ctx);
+	const { token, user } = nextCookie(ctx);
 
 	// If there's no token, it means the user is not logged in.
 	if (!token) {
@@ -24,11 +25,12 @@ export const auth = ctx => {
 		}
 	}
 
-	return token;
+	return { token, user };
 };
 
 export const logout = () => {
 	cookie.remove('token');
+	cookie.remove('user');
 	window.localStorage.setItem('logout', Date.now());
 	Router.push('/login');
 };
@@ -55,13 +57,13 @@ export const withAuthSync = WrappedComponent => {
 	};
 
 	Wrapper.getInitialProps = async ctx => {
-		const token = auth(ctx);
+		const { token, user } = auth(ctx);
 
 		const componentProps =
 			WrappedComponent.getInitialProps &&
 			(await WrappedComponent.getInitialProps(ctx));
 
-		return { ...componentProps, token };
+		return { ...componentProps, token, user };
 	};
 
 	return Wrapper;
@@ -80,5 +82,3 @@ export const getHost = (req) => {
 	}
 	return `https://${host}`;
 }
-
-export default getHost;

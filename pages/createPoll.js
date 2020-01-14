@@ -11,7 +11,7 @@ import {
 } from '../styles/StyledForm';
 import { withAuthSync } from '../utils/login';
 
-const CreatePoll = () => {
+const CreatePoll = props => {
 	const [taskName, setTaskName] = useState('');
 	const [taskDescription, setTaskDescription] = useState('');
 	const router = useRouter();
@@ -33,7 +33,7 @@ const CreatePoll = () => {
 	}
 
 	return (
-		<Layout>
+		<Layout {...props}>
 			<StyledContainer
 				display="flex"
 				flexDirection="column"

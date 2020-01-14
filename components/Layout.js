@@ -11,7 +11,7 @@ const Layout = props => (
 			<title>Home</title>
 			<link rel="icon" href="/favicon.ico" />
 		</Head>
-		<Nav />
+		<Nav token={props.token} />
 		{props.children}
 		<Footer />
 		<GlobalStyles />
