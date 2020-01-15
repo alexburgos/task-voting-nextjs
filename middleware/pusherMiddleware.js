@@ -1,7 +1,9 @@
 import Pusher from 'pusher';
 
+// Next.js middleware to connect handlers to Pushers server side app
 const connectPusher = handler => async (req, res) => {
 	try {
+		// these keys should be saved in an .env file or somewhere safer for production but this is ok for now :)
 		const pusher = new Pusher({
 			appId: '922127',
 			key: 'e2940972e6de5b249d99',

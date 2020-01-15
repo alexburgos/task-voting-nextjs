@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import fetch from 'isomorphic-unfetch';
-import { useRouter } from 'next/router';
 import nextCookies from 'next-cookies';
 import cookie from 'js-cookie';
 import Layout from '../../components/Layout';
@@ -8,29 +7,30 @@ import { StyledButton } from '../../styles/StyledForm';
 import { StyledContainer } from '../../styles/StyledContainer';
 import {
 	StyledPollVoteButton,
-	StyledPollChoice
+	StyledPollChoice,
+	StyledCardHeart
 } from '../../styles/StyledPoll';
 import { withAuthSync, getHost } from '../../utils/login';
 
 async function fetchPollData(props) {
+	//Load initial poll data and reuse function to refresh it after a vote
 	const apiUrl = getHost(props.req) + '/api/poll/' + props.query.pollId;
 	const response = await fetch(apiUrl);
 	const allCookies = nextCookies(props);
-	const { user, token } = allCookies;
+	const { user } = allCookies;
 	let hasExistingVote = false;
 
 	if (response.ok) {
 		const data = await response.json();
 
 		if (user) {
+			//if current user has voted on this poll based on cookie session set a flag to disable voting on first load
 			const currentPoll = user.votes.find(
 				vote => vote.pollId === props.query.pollId
 			);
 
-			//if current user has voted on this poll based on cookie session
 			hasExistingVote = currentPoll ? true : false;
 		}
-
 
 		return { poll: data, hasExistingVote };
 	} else {
@@ -43,7 +43,6 @@ const Poll = props => {
 	const [editingPollVote, setEditingPollVote] = useState(false);
 	const [user, setUser] = useState(props.user);
 	const [hasExistingVote, setExistingVote] = useState(props.hasExistingVote);
-	const router = useRouter();
 	const { pusherChannel } = props;
 
 	useEffect(() => {
@@ -55,7 +54,7 @@ const Poll = props => {
 	}, [pusherChannel]);
 
 	async function refreshPollData() {
-		// Simulating the network request object from initial fetch (maybe there's a better way to do this?)
+		// Simulating the network request object from initial fetch (TODO: maybe there's a better way to do this?)
 		const refreshedProps = await fetchPollData({
 			req: { headers: { host: window.location.host } },
 			query: { pollId: poll._id }
@@ -63,21 +62,7 @@ const Poll = props => {
 		setPollData(refreshedProps.poll);
 	}
 
-	async function deletePoll() {
-		try {
-			await fetch('/api/deletePoll', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ id: props.poll._id })
-			});
-			router.push('/polls');
-		} catch (error) {
-			console.error(error);
-		}
-	}
-
+	//Logic to handle first vote and when an user decides to change their votes
 	async function handleVote(choice) {
 		const voteBody = editingPollVote
 			? {
@@ -130,6 +115,8 @@ const Poll = props => {
 				flexDirection="column"
 				alignItems="center"
 				justifyContent="center"
+				margin="50px 0 0 0"
+				textAlign="center"
 			>
 				<p>
 					<strong>Title</strong>: {poll.taskName}
@@ -146,14 +133,17 @@ const Poll = props => {
 					justifyContent="space-evenly"
 					minHeight="0"
 					flex="0"
-					marginTop="50px"
+					margin="50px 0 0 0"
 				>
+					<p>How complex is this task? (The higher the number vote the more complex)</p>
 					<StyledContainer
 						display="flex"
 						flexDirection="row"
+						flexWrap="wrap"
 						justifyContent="space-evenly"
 						minHeight="0"
-					>
+						margin="20px 0 0 0"
+					>	
 						{poll.choices.map(choice => (
 							<StyledPollChoice
 								key={choice.index}
@@ -165,6 +155,7 @@ const Poll = props => {
 									onClick={() => handleVote(choice)}
 									width="50px"
 								>
+								<StyledCardHeart>🖤</StyledCardHeart>
 									{choice.points}
 								</StyledPollVoteButton>
 								<p>{choice.votes}</p>
@@ -172,15 +163,12 @@ const Poll = props => {
 						))}
 					</StyledContainer>
 				</StyledContainer>
-				<StyledContainer display="flex" marginTop="20px" minHeight="0">
+				<StyledContainer display="flex" margin="20px 0 0 0" minHeight="0">
 					{hasExistingVote && (
 						<StyledButton onClick={handleChangeVote}>
 							Change your Vote
 						</StyledButton>
 					)}
-					<StyledButton onClick={deletePoll} margin={'0 0 0 10px'}>
-						Delete Poll
-					</StyledButton>
 				</StyledContainer>
 			</StyledContainer>
 		</Layout>

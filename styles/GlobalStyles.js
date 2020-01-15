@@ -18,4 +18,8 @@ body{
 p {
   margin: 10px auto;
 }
+
+a {
+  color: var(--cool-gray)
+}
 `;

@@ -1,6 +1,8 @@
 import connectDb from '../../middleware/dbMiddleware';
 import Poll from '../../models/Poll';
 
+// api call to handle creation of a new poll
+// voting choices are constants
 const votingChoices = [
 	{
 		index: 0,

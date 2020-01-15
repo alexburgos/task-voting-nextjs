@@ -3,6 +3,8 @@ import NextApp from 'next/app';
 import Pusher from 'pusher-js';
 import { ThemeProvider } from 'styled-components';
 
+// Cutom Next app to instantiate Pusher.js and build the channels  and add theme-ing through styled-components
+
 let theme = {
   primary: 'dark'
 };

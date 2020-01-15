@@ -1,4 +1,4 @@
-// The following code is taken from Next.JS examples
+// The following code is taken from Next.JS examples and modified for this app
 // github.com/zeit/next.js/tree/canary/examples/with-cookie-auth/
 
 import { useEffect } from 'react';
@@ -6,6 +6,7 @@ import Router from 'next/router';
 import nextCookie from 'next-cookies';
 import cookie from 'js-cookie';
 
+// authentication utility functions
 export const login = ({ token, user }) => {
 	cookie.set('token', token, { expires: 1 });
 	cookie.set('user', user, { expires: 1});
@@ -35,6 +36,8 @@ export const logout = () => {
 	Router.push('/login');
 };
 
+// Wrapper for react components that protects them from being accessed if the user is not logged in
+// and keeps the authentication in sync
 export const withAuthSync = WrappedComponent => {
 	const Wrapper = props => {
 		const syncLogout = event => {
@@ -70,7 +73,7 @@ export const withAuthSync = WrappedComponent => {
 };
 
 // This is not production ready, (except with providers that ensure a secure host, like Now)
-// For production consider the usage of environment variables and NODE_ENV
+// For production I should consider the usage of environment variables and NODE_ENV
 
 export const getHost = (req) => {
   if (!req) return '';

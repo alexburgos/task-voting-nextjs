@@ -1,5 +1,7 @@
 import Document from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
+
+// Custom document to enable global style sheets from styled-components, overriding built in next js styles
 export default class MyDocument extends Document {
 	static async getInitialProps(ctx) {
 		const sheet = new ServerStyleSheet();

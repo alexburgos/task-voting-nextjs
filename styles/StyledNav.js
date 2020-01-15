@@ -20,7 +20,7 @@ export const StyledNavList = styled.ul`
   li {
     cursor: pointer;
     list-style: none;
-    margin: 0 10px;
+    margin: 0 15px;
   }
 
   li.log-out {
@@ -30,28 +30,7 @@ export const StyledNavList = styled.ul`
   a {
     color: #fff;
     text-decoration: none;
-    position: relative;
   }
-
-  a:before {
-		content: '';
-		position: absolute;
-		width: 100%;
-		height: 2px;
-		bottom: -5px;
-		left: 0;
-		background-color: #fff;
-		visibility: hidden;
-		border-radius: 5px;
-		transform: scaleX(0);
-		transition: 0.15s linear;
-	}
-
-	a:hover:before,
-	a:focus:before {
-		visibility: visible;
-		transform: scaleX(1);
-	}
 `;
 
 export const StyledNavListItem = styled.li`

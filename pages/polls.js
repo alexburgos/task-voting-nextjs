@@ -14,19 +14,20 @@ const Polls = props => (
 			display="flex"
 			alignItems="center"
 			flexDirection="column"
-			minHeight="80vh"
+			minHeight="75vh"
+			margin="50px 0 0 0"
 		>
 			{props.polls.length > 0 ? (
 				<>
-					<h1>You can vote on the following polls: </h1>
 					{props.polls.length > 0 && (
 						<StyledContainer
 							display="flex"
 							alignItems="center"
+							textAlign="center"
 							flexDirection="column"
-							marginTop="50px"
 							minHeight="0"
 						>
+						<h1>You can vote on the following polls: </h1>
 							{props.polls.map(poll => (
 								<Link key={poll._id} href={`/poll/${poll._id}`}>
 									<StyledPollItem>{poll.taskName}</StyledPollItem>
@@ -36,13 +37,17 @@ const Polls = props => (
 					)}
 				</>
 			) : (
-				<p>There are no polls to vote on. </p>
+				<>
+					<p>There are no polls to vote on. </p>
+					<Link href={'/createPoll'}>Create a new poll!</Link>
+				</>
 			)}
 		</StyledContainer>
 	</Layout>
 );
 
 Polls.getInitialProps = async ctx => {
+	// fetch all the polls
 	const { token } = nextCookie(ctx);
 	const apiUrl = getHost(ctx.req) + '/api/polls';
 
@@ -63,11 +68,9 @@ Polls.getInitialProps = async ctx => {
 			const data = await response.json();
 			return { polls: data };
 		} else {
-			console.log('error');
 			return await redirectOnError();
 		}
 	} catch (error) {
-		console.log('error');
 		console.error(error);
 		return redirectOnError();
 	}

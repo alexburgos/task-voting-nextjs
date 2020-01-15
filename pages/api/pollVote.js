@@ -3,11 +3,12 @@ import Poll from '../../models/Poll';
 import User from '../../models/User';
 import connectPusher from '../../middleware/pusherMiddleware';
 
+// api call to handle poll vote
 const handler = async (req, res) => {
 	const {
 		pollId,
 		editingPollVote,
-		oldIndex,
+		oldIndex, // this value is only passed if the user is changing their previous vote
 		newIndex,
 		userToken
 	} = req.body;
@@ -17,9 +18,11 @@ const handler = async (req, res) => {
 		const currentVote = `choices.${newIndex}.votes`;
 
 		if (editingPollVote && oldIndex !== null) {
-			if (oldIndex === newIndex) return;
+			if (oldIndex === newIndex) return; // return if voting for the same choice
+			
 			const previousVote = `choices.${oldIndex}.votes`;
 
+			// remove previous vote by decreasing it
 			await Poll.findByIdAndUpdate(pollId, {
 				$inc: { [previousVote]: -1 }
 			});
@@ -30,6 +33,7 @@ const handler = async (req, res) => {
 
 		const existingPollVote = user.votes.find(vote => vote.pollId === pollId);
 
+		// keeps the user's voting choices in sync or stores them if it's their first vote
 		if (existingPollVote) {
 			existingPollVote.pointValueIndex = newIndex;
 		} else {
