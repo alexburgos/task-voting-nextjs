@@ -5,12 +5,11 @@ Task Voting:
 This is a Next.js/React/Node/Mongoose app where a developer can cast their vote to rank how complex a task is using the "planning poker" method. This is a coding assignment for Epidemic Sound that I wish to continue working with and improve in the near future.
 
 ## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Here you'll see instructions on how to get this app running on your Mac
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+You need
 
 ```
 Node.js
@@ -20,7 +19,7 @@ Yarn or NPM
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+Steps to get this app running
 
 ```
 npm install or yarn
