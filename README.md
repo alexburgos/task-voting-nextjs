@@ -43,9 +43,7 @@ This app will be hosted using Zeit's Now and serverless function with a MongoDb 
 
 ## Authors
 
-* **Alex Burgos** - *Initial work* - [PurpleBooth](https://github.com/alexburgos)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **Alex Burgos** 
 
 ## License
 
