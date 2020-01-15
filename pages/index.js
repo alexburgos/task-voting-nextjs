@@ -19,7 +19,7 @@ const Index = () => (
 			</p>
 			<p style={{ textAlign: 'center', padding: '0 20px', margin: '10px 0' }}>
 				<em>
-					NOTE: In order to vote you have to log in. A developer can vote once but
+					NOTE: In order to vote you have to log in, so you need a Github account. A developer can vote once but
 					can change their votes. <br/>
 					You'll need to have Node, Mongodb in order to manipulate data and work with this application locally.
 				</em>
