@@ -44,6 +44,10 @@ npm run dev or yarn run dev
 No tests were written for this (yet!)
 
 
+## Optionsal
+If you wanna see some test pools you can run `node bin/seed.js` and it would populate the database with a few ones.
+
+
 ## Deployment
 
 This app will be hosted using Zeit's Now and serverless function with a MongoDb cluster. Work in progress.
