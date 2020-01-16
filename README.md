@@ -45,7 +45,7 @@ No tests were written for this (yet!)
 
 
 ## Optionsal
-If you wanna see some test pools you can run `node bin/seed.js` and it would populate the database with a few ones.
+If you wanna start with a few test polls you can run `node bin/seed.js` and it would populate the database.
 
 
 ## Deployment
