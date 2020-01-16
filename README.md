@@ -17,6 +17,15 @@ Mongodb
 Yarn or NPM
 ```
 
+For Mongo, I found it the easiest to install using Homebrew on the Mac (Skip you if already have it installed)
+
+With Homebrew: 
+```
+brew tap mongodb/brew
+brew install mongodb-community@4.2
+brew services start mongodb-community@4.2
+```
+
 ### Installing
 
 Steps to get this app running
