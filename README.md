@@ -15,9 +15,13 @@ You need
 Node.js
 Mongodb
 Yarn or NPM
+Homebrew (optional)
 ```
 
-For Mongo, I found it the easiest to install using Homebrew on the Mac
+For Mongo, I found it the easiest to install using [Homebrew](https://brew.sh/) on the Mac
+```
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
 
 With Homebrew: 
 ```
