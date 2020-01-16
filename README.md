@@ -17,7 +17,7 @@ Mongodb
 Yarn or NPM
 ```
 
-For Mongo, I found it the easiest to install using Homebrew on the Mac (Skip you if already have it installed)
+For Mongo, I found it the easiest to install using Homebrew on the Mac
 
 With Homebrew: 
 ```
