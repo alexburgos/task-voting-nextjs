@@ -2,7 +2,7 @@
 
 Task Voting:
 
-This is a Next.js/React/Node/Mongoose app where a developer can cast their vote to rank how complex a task is using the "planning poker" method. This is a coding assignment for Epidemic Sound that I wish to continue working with and improve in the near future.
+This is a Next.js/React/Node/Mongo app where a developer can cast their vote to rank how complex a task is using the "planning poker" method.  It takes advantage of Next.js dynamic routes and API routes to create the server side logic (hosted as server less functions in Zeit) and Pusher.js to communicate in real time with web sockets. 
 
 ## Getting Started
 Here you'll see instructions on how to get this app running on your Mac
