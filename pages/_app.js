@@ -1,21 +1,13 @@
 import React from 'react';
 import NextApp from 'next/app';
 import Pusher from 'pusher-js';
-import { ThemeProvider } from 'styled-components';
 
-// Cutom Next app to instantiate Pusher.js and build the channels  and add theme-ing through styled-components
-
-let theme = {
-  primary: 'dark'
-};
+// Cutom Next app to instantiate Pusher.js and build the channels 
 export default class App extends NextApp {
   state = {
-    theme: theme
+    pusherChannel: null
   };
 
-  setTheme = () => {
-    this.setState({ theme: !this.state.theme});
-  }
 
   componentDidMount() {
     const pusher = new Pusher('e2940972e6de5b249d99', {
@@ -36,15 +28,12 @@ export default class App extends NextApp {
 	render() {
     const { Component, pageProps } = this.props;
     let newPageProps = {
-      setTheme: this.setTheme,
       pusherChannel: this.state.pusherChannel,
       ...pageProps
     }
 
 		return (
-			<ThemeProvider theme={theme}>
-				<Component {...newPageProps} />
-			</ThemeProvider>
+		  <Component {...newPageProps} />
 		);
 	}
 }
